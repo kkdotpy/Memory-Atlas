@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Memory Atlas — a gentle reminiscence companion for memory care.">
+  <title>The Memory Atlas</title>
+
+  <!-- Google Fonts: Lora (warm literary serif) + Inter (clean UI labels) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Reset ──────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design tokens ──────────────────────────────────────────────────────── */
+    :root {
+      --walnut:       #1a1209;
+      --walnut-mid:   #2c1f0e;
+      --walnut-light: #3d2e18;
+      --walnut-rim:   #4e3d24;
+      --amber:        #d4a843;
+      --amber-soft:   #c4964a;
+      --amber-dim:    #8a6a30;
+      --cream:        #fdf8f0;
+      --parchment:    #f5ede0;
+      --parchment-2:  #ede3d0;
+      --ink:          #2c2010;
+      --ink-mid:      #4a3820;
+      --ink-dim:      #7a6848;
+      --ink-faint:    #a89470;
+      --teal-dark:    #0d2e2e;
+      --teal-mid:     #1a4a46;
+      --teal-light:   #d4eeeb;
+      --teal-accent:  #2d9e96;
+      --sidebar-w:    260px;
+      --radius-sm:    6px;
+      --radius-md:    12px;
+      --radius-lg:    18px;
+      --shadow-sm:    0 1px 4px rgba(0,0,0,0.12);
+      --shadow-md:    0 4px 16px rgba(0,0,0,0.14);
+      --shadow-lg:    0 8px 32px rgba(0,0,0,0.18);
+      --transition:   0.18s ease;
+    }
+
+    /* ── Base layout ─────────────────────────────────────────────────────────── */
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--cream);
+      color: var(--ink);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────────────────────────── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--walnut);
+      color: #e8d8b8;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* Subtle wood-grain noise texture via SVG data URI */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+        linear-gradient(180deg, var(--walnut-mid) 0%, var(--walnut) 100%);
+    }
+
+    /* ─ Sidebar header ─ */
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--walnut-rim);
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .sidebar-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--amber) 0%, var(--amber-soft) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(212, 168, 67, 0.35);
+    }
+    .sidebar-title {
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--amber);
+      text-transform: uppercase;
+    }
+    .sidebar-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--ink-faint);
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─ New memory form ─ */
+    .new-memory-form {
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid var(--walnut-rim);
+      flex-shrink: 0;
+    }
+    .new-memory-form textarea {
+      width: 100%;
+      background: var(--walnut-light);
+      border: 1px solid var(--walnut-rim);
+      color: #e8d8b8;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-family: 'Lora', serif;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      resize: none;
+      height: 70px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+    }
+    .new-memory-form textarea::placeholder { color: var(--ink-dim); }
+    .new-memory-form textarea:focus {
+      border-color: var(--amber-dim);
+      box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.15);
+    }
+    .new-memory-form button {
+      margin-top: 8px;
+      width: 100%;
+      background: linear-gradient(135deg, var(--amber-soft) 0%, var(--amber-dim) 100%);
+      color: var(--walnut);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      transition: opacity var(--transition), transform var(--transition);
+    }
+    .new-memory-form button:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+    .new-memory-form button:active { transform: translateY(0); }
+
+    /* ─ Tab list ─ */
+    .tab-list {
+      padding: 10px 0;
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--walnut-rim) transparent;
+    }
+    .tab-list::-webkit-scrollbar { width: 4px; }
+    .tab-list::-webkit-scrollbar-thumb { background: var(--walnut-rim); border-radius: 4px; }
+
+    .tab-section-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--ink-dim);
+      padding: 10px 16px 4px;
+    }
+
+    .tab-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      color: #c8b890;
+      text-decoration: none;
+      font-family: 'Lora', serif;
+      font-size: 0.82rem;
+      border-left: 3px solid transparent;
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+      line-height: 1.35;
+    }
+    .tab-item:hover {
+      background: var(--walnut-light);
+      color: #e8d8b8;
+    }
+    .tab-item.active {
+      border-left-color: var(--amber);
+      background: var(--walnut-light);
+      color: #f0e4c4;
+    }
+    .tab-item.sealed {
+      color: var(--ink-dim);
+      font-style: italic;
+    }
+    .tab-item .tab-icon {
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .tab-item .tab-name {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Main canvas ─────────────────────────────────────────────────────────── */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--cream);
+    }
+
+    /* ── Inline tab title edit (shared) ─────────────────────────────────────── */
+    .title-edit-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .title-edit-btn {
+      background: transparent;
+      border: 1px solid var(--parchment-2);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--ink-dim);
+      transition: background var(--transition), border-color var(--transition);
+      flex-shrink: 0;
+    }
+    .title-edit-btn:hover {
+      background: var(--parchment);
+      border-color: var(--amber-dim);
+      color: var(--ink-mid);
+    }
+    .title-edit-form {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .title-edit-form input {
+      flex: 1;
+      font-family: 'Lora', serif;
+      font-size: 1.05rem;
+      border: 1.5px solid var(--amber-dim);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      background: #fffdf7;
+      color: var(--ink);
+      outline: none;
+    }
+    .title-edit-form button {
+      background: var(--walnut-light);
+      color: #e8d8b8;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* ── Child-page styles injected here ─────────────────────────────────────── */
+    {% block extra_style %}{% endblock %}
+
+  </style>
+</head>
+<body>
+
+<nav id="sidebar" role="navigation" aria-label="Memory threads">
+
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon" aria-hidden="true">🗺️</div>
+      <div>
+        <div class="sidebar-title">Memory Atlas</div>
+      </div>
+    </div>
+    <div class="sidebar-subtitle">Gentle reminiscence companion</div>
+  </div>
+
+  <div class="new-memory-form">
+    <form method="POST" action="/tab/new">
+      <textarea name="fragment" id="fragment-input"
+        placeholder="What comes to mind today?…"
+        aria-label="Start a new memory thread"
+      ></textarea>
+      <button type="submit" id="new-memory-btn">
+        ✦ Begin new memory
+      </button>
+    </form>
+  </div>
+
+  <div class="tab-list" role="list">
+    {% if tabs %}
+    <div class="tab-section-label">Memory Threads</div>
+    {% for t in tabs %}
+    <a href="/tab/{{ t.id }}"
+       role="listitem"
+       class="tab-item {% if active_tab and t.id == active_tab.id %}active{% endif %} {% if t.sealed %}sealed{% endif %}"
+       aria-current="{% if active_tab and t.id == active_tab.id %}page{% endif %}">
+      <span class="tab-icon">{% if t.sealed %}🔒{% else %}◈{% endif %}</span>
+      <span class="tab-name">{{ t.title }}</span>
+    </a>
+    {% endfor %}
+    {% endif %}
+  </div>
+
+</nav>
+
+<main id="main" role="main">
+  {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>
