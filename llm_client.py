@@ -20,12 +20,13 @@ SYSTEM_PROMPT = '''You are the narrative engine for 'The Memory Atlas,' a gentle
                 Your job each turn:
                 1. Read the full conversation history for this memory thread.
                 2. Write a short, warm narrative paragraph (3-5 sentences) that reflects back what was shared,
-                in a validating, non-corrective tone. Never question accuracy — gently follow their lead.
+                in a validating, non-corrective tone. Never question accuracy — gently follow their lead. Also add a sentence that invites them to share more sensory detail, if they wish. 
+                Avoid historical facts, dates, place names, or any information not explicitly mentioned by the person sharing. Never invent or assume context.
                 3. Extract a concise visual prompt descriptor (two sentence, concrete and visual: setting,
                 objects, era, lighting) suitable for Stable Diffusion, ONLY if the person has shared
                 rich sensory detail. Otherwise, leave it empty — the caregiver will decide if an image helps.
                 4. Provide caregiver_context: exactly 3-4 gentle prompts for the caregiver ONLY — open-ended 
-                suggestions for deepening the conversation adding to that previous premise. Do NOT include historical facts, dates, place 
+                questions suggestions for deepening the conversation adding to that previous premise. Do NOT include historical facts, dates, place 
                 names, or any information not explicitly mentioned by the person sharing. Never invent 
                 or assume context. These are suggestions the caregiver can use to ask follow-up questions.
                 Examples: "Ask what they remember about the sounds...", "Invite them to describe who was nearby..."
@@ -162,6 +163,7 @@ def _normalize_turn(data, conversation_history):
     ctx = data.get("caregiver_context", [])
     if not isinstance(ctx, list):
         ctx = [str(ctx)] if ctx else []
+
     session_text = " ".join(m["content"] for m in conversation_history if m["role"] == "user")
     data["caregiver_context"] = filter_caregiver_notes(
         [str(n).strip() for n in ctx if str(n).strip()][:4],  # Allow up to 4 items
@@ -200,14 +202,29 @@ def _session_terms(text):
     return {t for t in tokens if len(t) > 3 and t not in stop}
 
 
+GENERIC_SUPPORT_CHECKER = '''Check if the note is a generic caregiver support suggestion (e.g., 'listen warmly', 'allow pauses') without introducing new facts. Return True if it is generic, False otherwise.
+                            For example: "Ask if they remember the area around the river" is generic so return True, but "Ask if they remember a shop named "Miraj Fashion" near that river" is not generic so return False.
+                          '''
+
 def _is_generic_support_note(note):
-    markers = (
-        "listen warmly", "without correcting", "open question", "how it felt",
-        "how this felt", "allow pauses", "reflect back", "no need to fill",
-        "gentle", "validation", "encourage", "pause", "silence",
-    )
-    lower = note.lower()
-    return any(m in lower for m in markers)
+    # markers = (
+    #     "listen warmly", "without correcting", "open question", "how it felt",
+    #     "how this felt", "allow pauses", "reflect back", "no need to fill",
+    #     "gentle", "validation", "encourage", "pause", "silence",
+    # )
+    # lower = note.lower()
+    # return any(m in lower for m in markers)
+    # Use the model to check if the note is generic or not
+    messages = [
+        {"role": "system", "content": GENERIC_SUPPORT_CHECKER},
+        {"role": "user", "content": note}
+    ]
+    try:
+        raw = _call_ollama_text(messages)
+        result = raw.strip().lower()
+        return result == "true"
+    except Exception:
+        return False
 
 
 def _default_caregiver_context(narrative):
