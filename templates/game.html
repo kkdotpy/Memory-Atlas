@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block extra_style %}
+
+/* ── Memory game wrapper ─────────────────────────────────────────────────── */
+#game-canvas {
+  flex: 1;
+  overflow-y: auto;
+  padding: 44px 56px 64px;
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--parchment-2) transparent;
+}
+#game-canvas::-webkit-scrollbar { width: 5px; }
+#game-canvas::-webkit-scrollbar-thumb { background: var(--parchment-2); border-radius: 4px; }
+
+.game-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--amber-dim);
+  background: rgba(212,168,67,0.12);
+  border: 1px solid var(--amber-dim);
+  border-radius: 20px;
+  padding: 4px 14px;
+  margin-bottom: 16px;
+}
+
+.game-title {
+  font-family: 'Lora', serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+.game-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: var(--ink-dim);
+  margin-bottom: 28px;
+}
+
+/* ── Progress bar ─────────────────────────────────────────────────────────── */
+.progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.progress-track {
+  flex: 1;
+  height: 10px;
+  background: var(--parchment-2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--amber-soft), var(--amber));
+  border-radius: 6px;
+  transition: width 0.35s ease;
+}
+.progress-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-dim);
+}
+
+/* ── Question Card ────────────────────────────────────────────────────────── */
+.question-card {
+  background: #fffdf7;
+  border: 2px solid #e0d4b8;
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 28px;
+  animation: card-in 0.35s ease both;
+  position: relative;
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-header-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--amber-dim);
+  margin-bottom: 12px;
+}
+
+.question-text {
+  font-family: 'Lora', serif;
+  font-size: 1.4rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+
+/* Optional Scene Image Thumbnail */
+.game-illustration {
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  max-width: 500px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border: 1px solid var(--parchment-2);
+}
+.game-illustration img {
+  width: 100%;
+  display: block;
+}
+
+/* ── Options list (Card buttons) ─────────────────────────────────────────── */
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.option-btn {
+  background: #fcf9f2;
+  border: 1.5px solid #dfd3bd;
+  border-radius: var(--radius-md);
+  padding: 18px 24px;
+  text-align: left;
+  font-family: 'Lora', serif;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.option-btn:hover {
+  background: #fff8eb;
+  border-color: var(--amber);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(212,168,67,0.15);
+}
+.option-btn.correct {
+  background: #eaf6ec !important;
+  border-color: #52a466 !important;
+  color: #1e5c2e !important;
+  font-weight: 600;
+}
+.option-btn.wrong {
+  background: #fdf1e8 !important;
+  border-color: #d4a070 !important;
+  color: #804a1e !important;
+}
+
+/* Feedback & Hint box */
+.feedback-box {
+  margin-top: 22px;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  display: none;
+}
+.feedback-box.show-correct {
+  display: block;
+  background: #eaf6ec;
+  border-left: 4px solid #52a466;
+  color: #1e5c2e;
+}
+.feedback-box.show-hint {
+  display: block;
+  background: #fdf8ee;
+  border-left: 4px solid var(--amber);
+  color: #6a4a10;
+}
+
+/* Action button */
+.game-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 26px;
+}
+.next-btn {
+  background: linear-gradient(135deg, var(--amber-soft) 0%, var(--amber-dim) 100%);
+  color: var(--walnut);
+  border: none;
+  border-radius: 30px;
+  padding: 14px 30px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.exit-btn {
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+.exit-btn:hover {
+  background: var(--parchment);
+}
+
+/* ── Completion card ──────────────────────────────────────────────────────── */
+.completion-card {
+  text-align: center;
+  background: #fffdf7;
+  border: 2px solid #e0d4b8;
+  border-radius: var(--radius-lg);
+  padding: 56px 44px;
+  box-shadow: var(--shadow-md);
+  display: none;
+  animation: card-in 0.4s ease both;
+}
+.completion-icon {
+  font-size: 3.8rem;
+  margin-bottom: 18px;
+}
+.completion-title {
+  font-family: 'Lora', serif;
+  font-size: 2rem;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.completion-msg {
+  font-family: 'Lora', serif;
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--ink-mid);
+  max-width: 560px;
+  margin: 0 auto 36px;
+}
+.completion-btns {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* ── Empty state card ─────────────────────────────────────────────────────── */
+.empty-game-card {
+  text-align: center;
+  background: #fffdf7;
+  border: 1.5px solid #e2d6be;
+  border-radius: var(--radius-lg);
+  padding: 48px 36px;
+  box-shadow: var(--shadow-sm);
+}
+.empty-game-card h2 {
+  font-family: 'Lora', serif;
+  font-size: 1.6rem;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.empty-game-card p {
+  font-family: 'Lora', serif;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ink-mid);
+  max-width: 480px;
+  margin: 0 auto 28px;
+}
+
+{% endblock %}
+
+{% block content %}
+<div id="game-canvas">
+
+  <div class="game-badge">🧩 Memory Recall Game</div>
+  <h1 class="game-title">Remembering {{ active_tab.title }}</h1>
+  <p class="game-subtitle">A gentle interactive card exercise to revisit and celebrate what you shared.</p>
+
+  {% if questions and questions|length > 0 %}
+
+  <div class="progress-bar-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width: {{ (100 / questions|length)|round }}%"></div>
+    </div>
+    <span class="progress-text" id="progress-text">Card 1 of {{ questions|length }}</span>
+  </div>
+
+  <div id="questions-container">
+    {% for q in questions %}
+    {% set q_idx = loop.index0 %}
+    <div class="question-card question-step" id="step-{{ q_idx }}" style="{% if not loop.first %}display:none{% endif %}">
+      
+      <div class="card-header-tag">✦ Memory Card {{ loop.index }} of {{ questions|length }}</div>
+
+      {% if visual_images and q_idx < visual_images|length %}
+      <div class="game-illustration">
+        <img src="/static/img/{{ active_tab.id }}/{{ visual_images[q_idx] }}" alt="Memory scene illustration">
+      </div>
+      {% endif %}
+
+      <h2 class="question-text">{{ q.question }}</h2>
+
+      <div class="options-grid">
+        {% for opt in q.options %}
+        {% set is_correct = (opt|trim == q.answer|trim) or (loop.first if q.answer not in q.options else false) %}
+        <button type="button" class="option-btn"
+                data-is-correct="{{ 'true' if is_correct else 'false' }}"
+                data-hint="{{ q.hint }}"
+                data-celebration="{{ q.celebration }}"
+                onclick="checkOption(this, {{ q_idx }})">
+          <span>{{ opt }}</span>
+          <span class="opt-mark"></span>
+        </button>
+        {% endfor %}
+      </div>
+
+      <div class="feedback-box" id="feedback-{{ q_idx }}"></div>
+
+      <div class="game-actions">
+        <a href="/tab/{{ active_tab.id }}" class="exit-btn">← Return to Memory</a>
+        <button type="button" class="next-btn" id="next-btn-{{ q_idx }}" style="display:none" onclick="nextQuestion({{ q_idx }})">
+          Next Memory Card →
+        </button>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="completion-card" id="completion-card">
+    <div class="completion-icon">🌟</div>
+    <h2 class="completion-title">Wonderful Recollections!</h2>
+    <p class="completion-msg">
+      You gently explored and exercised your memories from <strong>{{ active_tab.title }}</strong>. Every memory recalled is a precious treasure preserved.
+    </p>
+    <div class="completion-btns">
+      <button type="button" class="next-btn" onclick="restartGame()">Play Again ↺</button>
+      <a href="/tab/{{ active_tab.id }}" class="next-btn" style="background:var(--walnut-light);color:#fff">Return to Memory Story 📖</a>
+    </div>
+  </div>
+
+  {% else %}
+
+  <div class="empty-game-card">
+    <div style="font-size: 3rem; margin-bottom: 16px;">🌱</div>
+    <h2>Growing This Memory</h2>
+    <p>
+      Share a few more thoughts in this memory thread or seal it into a scrapbook story to unlock interactive recall cards!
+    </p>
+    <a href="/tab/{{ active_tab.id }}" class="next-btn">Back to Memory Conversation</a>
+  </div>
+
+  {% endif %}
+
+</div>
+
+<script>
+  const totalQuestions = {{ questions|length if questions else 0 }};
+
+  function checkOption(btn, stepIndex) {
+    const card = document.getElementById('step-' + stepIndex);
+    const feedback = document.getElementById('feedback-' + stepIndex);
+    const nextBtn = document.getElementById('next-btn-' + stepIndex);
+    const isCorrect = btn.getAttribute('data-is-correct') === 'true';
+    const celebration = btn.getAttribute('data-celebration') || 'Wonderful recollection!';
+    const hint = btn.getAttribute('data-hint') || 'Take your time, think back to your memory.';
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      btn.querySelector('.opt-mark').innerText = ' ✓';
+      card.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
+      feedback.className = 'feedback-box show-correct';
+      feedback.innerHTML = '<strong>✦ ' + celebration + '</strong>';
+      nextBtn.style.display = 'inline-flex';
+    } else {
+      btn.classList.add('wrong');
+      btn.querySelector('.opt-mark').innerText = ' ✗';
+      feedback.className = 'feedback-box show-hint';
+      feedback.innerHTML = '<strong>Clue:</strong> ' + hint + '<div style="margin-top:4px;font-size:0.8rem;opacity:0.85">Feel free to try another choice!</div>';
+    }
+  }
+
+  function nextQuestion(currentIndex) {
+    document.getElementById('step-' + currentIndex).style.display = 'none';
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < totalQuestions) {
+      document.getElementById('step-' + nextIndex).style.display = 'block';
+      const pct = Math.round(((nextIndex + 1) / totalQuestions) * 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-text').innerText = 'Card ' + (nextIndex + 1) + ' of ' + totalQuestions;
+    } else {
+      document.getElementById('progress-fill').style.width = '100%';
+      document.getElementById('progress-text').innerText = 'Complete!';
+      document.getElementById('completion-card').style.display = 'block';
+    }
+  }
+
+  function restartGame() {
+    window.location.reload();
+  }
+</script>
+{% endblock %}
+
