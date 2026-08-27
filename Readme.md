@@ -95,3 +95,9 @@ If you are keen to test and run the project locally on your machine, please refe
 > *After every response from the LLM assistant, a dedicated, real-time context panel updates automatically with targeted question prompts and conversational cues.*  
 > 
 > * **Purpose**: Serves as a live cheat-sheet for caregivers or family members sitting alongside the patient, helping them ask meaningful, context-specific follow-up questions to encourage further dialogue.
+
+
+> SNAPSHOTS of the interface
+> <img width="1920" height="1080" alt="Outlook of the App" src="https://github.com/user-attachments/assets/fd8cb02c-b7d9-4f85-a816-03f35e02b273" />
+> 
+
