@@ -99,5 +99,9 @@ If you are keen to test and run the project locally on your machine, please refe
 
 > SNAPSHOTS of the interface
 > <img width="1920" height="1080" alt="Outlook of the App" src="https://github.com/user-attachments/assets/fd8cb02c-b7d9-4f85-a816-03f35e02b273" />
-> 
+> <img width="1920" height="1080" alt="Left Pane" src="https://github.com/user-attachments/assets/b87a8ce8-3349-42c2-a51d-1f9dff9385e7" />
+> <img width="1920" height="1080" alt="Main body" src="https://github.com/user-attachments/assets/44ab53fc-f926-4af9-8218-8aba513d3c3b" />
+> <img width="1920" height="1080" alt="Right Pane" src="https://github.com/user-attachments/assets/f1e35ed3-f84d-475d-b78f-5e2a380f3ac5" />
+
+
 
