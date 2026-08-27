@@ -219,6 +219,56 @@
       text-overflow: ellipsis;
     }
 
+    /* ─ Sidebar bottom game button ─ */
+    .sidebar-game-footer {
+      padding: 14px 16px;
+      border-top: 1px solid var(--walnut-rim);
+      background: rgba(20, 14, 7, 0.6);
+      flex-shrink: 0;
+    }
+    .sidebar-game-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(212, 168, 67, 0.18) 0%, rgba(196, 150, 74, 0.08) 100%);
+      border: 1px solid var(--amber-dim);
+      border-radius: var(--radius-md);
+      color: #f0e4c4;
+      text-decoration: none;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+    .sidebar-game-btn:hover {
+      background: linear-gradient(135deg, rgba(212, 168, 67, 0.3) 0%, rgba(196, 150, 74, 0.18) 100%);
+      border-color: var(--amber);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+    .sidebar-game-btn .game-icon {
+      font-size: 1.3rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .sidebar-game-btn .game-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .sidebar-game-btn .game-btn-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--amber);
+    }
+    .sidebar-game-btn .game-btn-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      color: var(--ink-faint);
+      margin-top: 1px;
+    }
+
     /* ── Main canvas ─────────────────────────────────────────────────────────── */
     #main {
       flex: 1;
@@ -323,6 +373,16 @@
     </a>
     {% endfor %}
     {% endif %}
+  </div>
+
+  <div class="sidebar-game-footer">
+    <a href="{% if active_tab %}/tab/{{ active_tab.id }}/game{% else %}/game{% endif %}" class="sidebar-game-btn" title="Play interactive memory recall game">
+      <span class="game-icon" aria-hidden="true">🧩</span>
+      <div class="game-info">
+        <span class="game-btn-title">Memory Recall Game</span>
+        <span class="game-btn-sub">Revisit what you shared</span>
+      </div>
+    </a>
   </div>
 
 </nav>
