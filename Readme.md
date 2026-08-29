@@ -8,7 +8,7 @@ A local, LLM-driven cognitive stimulation platform designed to support individua
 ## 1. Product Overview & Literature Review
 
 ### Clinical Background: Reminiscence Therapy (RT)
-Reminiscence Therapy has been a foundational approach in cognitive stimulation therapy since the 1980s. While individuals living with dementia often experience significant short-term memory loss, long-term nostalgic memories—such as a childhood pet or early life experiences—frequently remain accessible. 
+Reminiscence Therapy has been a foundational approach in cognitive stimulation therapy since the 1980s. While individuals living with dementia often experience significant short-term memory loss, long-term nostalgic memories such as a childhood pet or early life experiences frequently remain accessible. 
 
 RT leverages sensory prompts like music, art, personal stories, and photographs to guide structured conversations. Encouraging a positive perspective on life through nostalgic recall helps stimulate cognitive function and addresses pre-death grief—a common phenomenon involving anticipatory loss experienced by families and caregivers prior to a loved one's passing.
 
